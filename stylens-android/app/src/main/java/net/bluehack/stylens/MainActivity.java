@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import net.bluehack.stylens.camera.CameraFragment;
 import net.bluehack.stylens.gallery.GalleryFragment;
 import net.bluehack.stylens.home.FeedFragment;
+import net.bluehack.stylens.home.StaggeredGridFragment;
 import net.bluehack.stylens_android.R;
 
 import java.util.List;
@@ -85,7 +86,8 @@ public class MainActivity extends AppCompatActivity {
             Fragment fragment = null;
             switch (position) {
                 case 0:
-                    fragment = FeedFragment.create(position);
+//                    fragment = FeedFragment.create(position);
+                    fragment = StaggeredGridFragment.create(position);
                     break;
                 case 1:
                     fragment = CameraFragment.create(position);
