@@ -3,6 +3,9 @@ package net.bluehack.stylens.home;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * TODO: create products list
+ * */
 public class SampleData {
 
     public static final int SAMPLE_DATA_ITEM_COUNT = 30;

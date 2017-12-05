@@ -24,13 +24,14 @@ public class CameraFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPageNumber = getArguments().getInt("page");
+//        Camera2BasicFragment.newInstance();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_camera, container, false);
-        ((TextView) rootView.findViewById(R.id.number)).setText(mPageNumber + "");
+//        ((TextView) rootView.findViewById(R.id.number)).setText(mPageNumber + "");
         return rootView;
     }
 }

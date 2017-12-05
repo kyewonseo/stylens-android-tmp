@@ -323,16 +323,151 @@ public class ProductApi {
     }
   }
   /**
+  * Get Products by productId
+  * Returns similar Products with productId
+   * @param productId 
+   * @param offset 
+   * @param limit 
+   * @return GetProductsResponse
+  */
+  public GetProductsResponse getProducts (String productId, Integer offset, Integer limit) throws TimeoutException, ExecutionException, InterruptedException, ApiException {
+    Object postBody = null;
+    // verify the required parameter 'productId' is set
+    if (productId == null) {
+      VolleyError error = new VolleyError("Missing the required parameter 'productId' when calling getProducts",
+        new ApiException(400, "Missing the required parameter 'productId' when calling getProducts"));
+    }
+
+    // create path and map variables
+    String path = "/products";
+
+    // query params
+    List<Pair> queryParams = new ArrayList<Pair>();
+    // header params
+    Map<String, String> headerParams = new HashMap<String, String>();
+    // form params
+    Map<String, String> formParams = new HashMap<String, String>();
+    queryParams.addAll(ApiInvoker.parameterToPairs("", "productId", productId));
+    queryParams.addAll(ApiInvoker.parameterToPairs("", "offset", offset));
+    queryParams.addAll(ApiInvoker.parameterToPairs("", "limit", limit));
+    String[] contentTypes = {
+    };
+    String contentType = contentTypes.length > 0 ? contentTypes[0] : "application/json";
+
+    if (contentType.startsWith("multipart/form-data")) {
+      // file uploading
+      MultipartEntityBuilder localVarBuilder = MultipartEntityBuilder.create();
+      HttpEntity httpEntity = (HttpEntity) localVarBuilder.build();
+      postBody = httpEntity;
+    } else {
+      // normal form params
+    }
+
+    String[] authNames = new String[] {  };
+
+    try {
+      String localVarResponse = apiInvoker.invokeAPI (basePath, path, "GET", queryParams, postBody, headerParams, formParams, contentType, authNames);
+      if (localVarResponse != null) {
+         return (GetProductsResponse) ApiInvoker.deserialize(localVarResponse, "", GetProductsResponse.class);
+      } else {
+         return null;
+      }
+    } catch (ApiException ex) {
+       throw ex;
+    } catch (InterruptedException ex) {
+       throw ex;
+    } catch (ExecutionException ex) {
+      if (ex.getCause() instanceof VolleyError) {
+        VolleyError volleyError = (VolleyError)ex.getCause();
+        if (volleyError.networkResponse != null) {
+          throw new ApiException(volleyError.networkResponse.statusCode, volleyError.getMessage());
+        }
+      }
+      throw ex;
+    } catch (TimeoutException ex) {
+      throw ex;
+    }
+  }
+
+      /**
+   * Get Products by productId
+   * Returns similar Products with productId
+   * @param productId    * @param offset    * @param limit 
+  */
+  public void getProducts (String productId, Integer offset, Integer limit, final Response.Listener<GetProductsResponse> responseListener, final Response.ErrorListener errorListener) {
+    Object postBody = null;
+
+    // verify the required parameter 'productId' is set
+    if (productId == null) {
+      VolleyError error = new VolleyError("Missing the required parameter 'productId' when calling getProducts",
+        new ApiException(400, "Missing the required parameter 'productId' when calling getProducts"));
+    }
+
+    // create path and map variables
+    String path = "/products".replaceAll("\\{format\\}","json");
+
+    // query params
+    List<Pair> queryParams = new ArrayList<Pair>();
+    // header params
+    Map<String, String> headerParams = new HashMap<String, String>();
+    // form params
+    Map<String, String> formParams = new HashMap<String, String>();
+
+    queryParams.addAll(ApiInvoker.parameterToPairs("", "productId", productId));
+    queryParams.addAll(ApiInvoker.parameterToPairs("", "offset", offset));
+    queryParams.addAll(ApiInvoker.parameterToPairs("", "limit", limit));
+
+
+    String[] contentTypes = {
+      
+    };
+    String contentType = contentTypes.length > 0 ? contentTypes[0] : "application/json";
+
+    if (contentType.startsWith("multipart/form-data")) {
+      // file uploading
+      MultipartEntityBuilder localVarBuilder = MultipartEntityBuilder.create();
+      
+
+      HttpEntity httpEntity = (HttpEntity) localVarBuilder.build();
+      postBody = httpEntity;
+    } else {
+      // normal form params
+          }
+
+    String[] authNames = new String[] {  };
+
+    try {
+      apiInvoker.invokeAPI(basePath, path, "GET", queryParams, postBody, headerParams, formParams, contentType, authNames,
+        new Response.Listener<String>() {
+          @Override
+          public void onResponse(String localVarResponse) {
+            try {
+              responseListener.onResponse((GetProductsResponse) ApiInvoker.deserialize(localVarResponse,  "", GetProductsResponse.class));
+            } catch (ApiException exception) {
+               errorListener.onErrorResponse(new VolleyError(exception));
+            }
+          }
+      }, new Response.ErrorListener() {
+          @Override
+          public void onErrorResponse(VolleyError error) {
+            errorListener.onErrorResponse(error);
+          }
+      });
+    } catch (ApiException ex) {
+      errorListener.onErrorResponse(new VolleyError(ex));
+    }
+  }
+  /**
   * Query to search products
   * 
    * @param file Image file to upload (only support jpg format yet)
    * @return GetProductsResponse
   */
-  public GetProductsResponse getProducts (File file) throws TimeoutException, ExecutionException, InterruptedException, ApiException {
+  public GetProductsResponse getProductsByImageFile (File file) throws TimeoutException, ExecutionException, InterruptedException, ApiException {
     Object postBody = null;
 
     // create path and map variables
-    String path = "/products";
+    String path = "/products/images";
 
     // query params
     List<Pair> queryParams = new ArrayList<Pair>();
@@ -388,12 +523,12 @@ public class ProductApi {
    * 
    * @param file Image file to upload (only support jpg format yet)
   */
-  public void getProducts (File file, final Response.Listener<GetProductsResponse> responseListener, final Response.ErrorListener errorListener) {
+  public void getProductsByImageFile (File file, final Response.Listener<GetProductsResponse> responseListener, final Response.ErrorListener errorListener) {
     Object postBody = null;
 
 
     // create path and map variables
-    String path = "/products".replaceAll("\\{format\\}","json");
+    String path = "/products/images".replaceAll("\\{format\\}","json");
 
     // query params
     List<Pair> queryParams = new ArrayList<Pair>();
@@ -429,6 +564,144 @@ public class ProductApi {
 
     try {
       apiInvoker.invokeAPI(basePath, path, "POST", queryParams, postBody, headerParams, formParams, contentType, authNames,
+        new Response.Listener<String>() {
+          @Override
+          public void onResponse(String localVarResponse) {
+            try {
+              responseListener.onResponse((GetProductsResponse) ApiInvoker.deserialize(localVarResponse,  "", GetProductsResponse.class));
+            } catch (ApiException exception) {
+               errorListener.onErrorResponse(new VolleyError(exception));
+            }
+          }
+      }, new Response.ErrorListener() {
+          @Override
+          public void onErrorResponse(VolleyError error) {
+            errorListener.onErrorResponse(error);
+          }
+      });
+    } catch (ApiException ex) {
+      errorListener.onErrorResponse(new VolleyError(ex));
+    }
+  }
+  /**
+  * Get Products by imageId and objectId
+  * Returns Products belongs to a imageId and objectId
+   * @param imageId 
+   * @param objectId 
+   * @return GetProductsResponse
+  */
+  public GetProductsResponse getProductsByImageIdAndObjectId (String imageId, Integer objectId) throws TimeoutException, ExecutionException, InterruptedException, ApiException {
+    Object postBody = null;
+    // verify the required parameter 'imageId' is set
+    if (imageId == null) {
+      VolleyError error = new VolleyError("Missing the required parameter 'imageId' when calling getProductsByImageIdAndObjectId",
+        new ApiException(400, "Missing the required parameter 'imageId' when calling getProductsByImageIdAndObjectId"));
+    }
+    // verify the required parameter 'objectId' is set
+    if (objectId == null) {
+      VolleyError error = new VolleyError("Missing the required parameter 'objectId' when calling getProductsByImageIdAndObjectId",
+        new ApiException(400, "Missing the required parameter 'objectId' when calling getProductsByImageIdAndObjectId"));
+    }
+
+    // create path and map variables
+    String path = "/products/images/{imageId}/objects/{objectId}".replaceAll("\\{" + "imageId" + "\\}", apiInvoker.escapeString(imageId.toString())).replaceAll("\\{" + "objectId" + "\\}", apiInvoker.escapeString(objectId.toString()));
+
+    // query params
+    List<Pair> queryParams = new ArrayList<Pair>();
+    // header params
+    Map<String, String> headerParams = new HashMap<String, String>();
+    // form params
+    Map<String, String> formParams = new HashMap<String, String>();
+    String[] contentTypes = {
+    };
+    String contentType = contentTypes.length > 0 ? contentTypes[0] : "application/json";
+
+    if (contentType.startsWith("multipart/form-data")) {
+      // file uploading
+      MultipartEntityBuilder localVarBuilder = MultipartEntityBuilder.create();
+      HttpEntity httpEntity = (HttpEntity) localVarBuilder.build();
+      postBody = httpEntity;
+    } else {
+      // normal form params
+    }
+
+    String[] authNames = new String[] {  };
+
+    try {
+      String localVarResponse = apiInvoker.invokeAPI (basePath, path, "GET", queryParams, postBody, headerParams, formParams, contentType, authNames);
+      if (localVarResponse != null) {
+         return (GetProductsResponse) ApiInvoker.deserialize(localVarResponse, "", GetProductsResponse.class);
+      } else {
+         return null;
+      }
+    } catch (ApiException ex) {
+       throw ex;
+    } catch (InterruptedException ex) {
+       throw ex;
+    } catch (ExecutionException ex) {
+      if (ex.getCause() instanceof VolleyError) {
+        VolleyError volleyError = (VolleyError)ex.getCause();
+        if (volleyError.networkResponse != null) {
+          throw new ApiException(volleyError.networkResponse.statusCode, volleyError.getMessage());
+        }
+      }
+      throw ex;
+    } catch (TimeoutException ex) {
+      throw ex;
+    }
+  }
+
+      /**
+   * Get Products by imageId and objectId
+   * Returns Products belongs to a imageId and objectId
+   * @param imageId    * @param objectId 
+  */
+  public void getProductsByImageIdAndObjectId (String imageId, Integer objectId, final Response.Listener<GetProductsResponse> responseListener, final Response.ErrorListener errorListener) {
+    Object postBody = null;
+
+    // verify the required parameter 'imageId' is set
+    if (imageId == null) {
+      VolleyError error = new VolleyError("Missing the required parameter 'imageId' when calling getProductsByImageIdAndObjectId",
+        new ApiException(400, "Missing the required parameter 'imageId' when calling getProductsByImageIdAndObjectId"));
+    }
+    // verify the required parameter 'objectId' is set
+    if (objectId == null) {
+      VolleyError error = new VolleyError("Missing the required parameter 'objectId' when calling getProductsByImageIdAndObjectId",
+        new ApiException(400, "Missing the required parameter 'objectId' when calling getProductsByImageIdAndObjectId"));
+    }
+
+    // create path and map variables
+    String path = "/products/images/{imageId}/objects/{objectId}".replaceAll("\\{format\\}","json").replaceAll("\\{" + "imageId" + "\\}", apiInvoker.escapeString(imageId.toString())).replaceAll("\\{" + "objectId" + "\\}", apiInvoker.escapeString(objectId.toString()));
+
+    // query params
+    List<Pair> queryParams = new ArrayList<Pair>();
+    // header params
+    Map<String, String> headerParams = new HashMap<String, String>();
+    // form params
+    Map<String, String> formParams = new HashMap<String, String>();
+
+
+
+    String[] contentTypes = {
+      
+    };
+    String contentType = contentTypes.length > 0 ? contentTypes[0] : "application/json";
+
+    if (contentType.startsWith("multipart/form-data")) {
+      // file uploading
+      MultipartEntityBuilder localVarBuilder = MultipartEntityBuilder.create();
+      
+
+      HttpEntity httpEntity = (HttpEntity) localVarBuilder.build();
+      postBody = httpEntity;
+    } else {
+      // normal form params
+          }
+
+    String[] authNames = new String[] {  };
+
+    try {
+      apiInvoker.invokeAPI(basePath, path, "GET", queryParams, postBody, headerParams, formParams, contentType, authNames,
         new Response.Listener<String>() {
           @Override
           public void onResponse(String localVarResponse) {

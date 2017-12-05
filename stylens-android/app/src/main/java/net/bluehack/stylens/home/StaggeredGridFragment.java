@@ -1,7 +1,10 @@
 package net.bluehack.stylens.home;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -13,22 +16,41 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.etsy.android.grid.StaggeredGridView;
+import com.google.gson.Gson;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.MultipartBuilder;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
+import net.bluehack.stylens.ApiClient;
 import net.bluehack.stylens_android.R;
 
-import java.util.ArrayList;
+import org.json.JSONObject;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+
+import io.swagger.client.model.GetFeedResponse;
+import io.swagger.client.model.Product;
+
+import static net.bluehack.stylens.utils.Logger.LOGD;
 import static net.bluehack.stylens.utils.Logger.makeLogTag;
 
 public class StaggeredGridFragment extends Fragment implements
         AbsListView.OnScrollListener, AbsListView.OnItemClickListener {
 
-    private static final String TAG = makeLogTag(FeedFragment.class);
-    private StaggeredGridView mGridView;
+    private static final String TAG = makeLogTag(StaggeredGridFragment.class);
+    private StaggeredGridView staggeredGridView;
     private boolean mHasRequestedMore;
-    private SampleAdapter mAdapter;
+    private FeedAdapter feedAdapter;
 
     private ArrayList<String> mData;
+    private ArrayList<Product> products = null;
 
     public static StaggeredGridFragment create(int pageNumber) {
         StaggeredGridFragment fragment = new StaggeredGridFragment();
@@ -53,7 +75,7 @@ public class StaggeredGridFragment extends Fragment implements
     public void onActivityCreated(final Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mGridView = (StaggeredGridView) getView().findViewById(R.id.grid_view);
+        staggeredGridView = (StaggeredGridView) getView().findViewById(R.id.grid_view);
 
         if (savedInstanceState == null) {
             final LayoutInflater layoutInflater = getActivity().getLayoutInflater();
@@ -65,25 +87,32 @@ public class StaggeredGridFragment extends Fragment implements
 //                txtHeaderTitle.setText("THE HEADER!");
 //                txtFooterTitle.setText("THE FOOTER!");
 
-//                mGridView.addHeaderView(header);
-//                mGridView.addFooterView(footer);
+//                staggeredGridView.addHeaderView(header);
+//                staggeredGridView.addFooterView(footer);
         }
 
-        if (mAdapter == null) {
-            mAdapter = new SampleAdapter(getActivity(), R.id.txt_line1);
+        if (feedAdapter == null) {
+            feedAdapter = new FeedAdapter(getActivity(), R.id.txt_line1);
         }
 
-        if (mData == null) {
-            mData = SampleData.generateSampleData();
+        if (products == null) {
+//            mData = SampleData.generateSampleData();
+            feedGetAPI(getContext());
+//            test5API(getContext());
+//            test6API(getContext());
+//            test3API(getContext());
+//            test4API(getContext());
         }
 
-        for (String data : mData) {
-            mAdapter.add(data);
-        }
+//        for (Product data : products) {
+//            feedAdapter.add(data);
+//        }
 
-        mGridView.setAdapter(mAdapter);
-        mGridView.setOnScrollListener(this);
-        mGridView.setOnItemClickListener(this);
+        staggeredGridView.setAdapter(feedAdapter);
+        staggeredGridView.setOnScrollListener(this);
+        staggeredGridView.setOnItemClickListener(this);
+
+
     }
 
     @SuppressLint("LongLogTag")
@@ -104,7 +133,7 @@ public class StaggeredGridFragment extends Fragment implements
             if (lastInScreen >= totalItemCount) {
                 Log.d(TAG, "onScroll lastInScreen - so load more");
                 mHasRequestedMore = true;
-                onLoadMoreItems();
+//                onLoadMoreItems();
             }
         }
     }
@@ -112,12 +141,12 @@ public class StaggeredGridFragment extends Fragment implements
     private void onLoadMoreItems() {
         final ArrayList<String> sampleData = SampleData.generateSampleData();
         for (String data : sampleData) {
-            mAdapter.add(data);
+//            feedAdapter.add(data);
         }
         // stash all the data in our backing store
         mData.addAll(sampleData);
         // notify the adapter that we can update now
-        mAdapter.notifyDataSetChanged();
+        feedAdapter.notifyDataSetChanged();
         mHasRequestedMore = false;
     }
 
@@ -125,4 +154,173 @@ public class StaggeredGridFragment extends Fragment implements
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Toast.makeText(getActivity(), "Item Clicked: " + position, Toast.LENGTH_SHORT).show();
     }
+
+    private void feedGetAPI(final Context context) {
+        ApiClient.getInstance().feedGet(context, new ApiClient.ApiResponseListener() {
+            @Override
+            public void onResponse(final Object result) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Gson gson = new Gson();
+                                GetFeedResponse output = null;
+                                output = (GetFeedResponse) result;
+//                                LOGE(TAG, "output=>" + output.toString());
+
+                                products = (ArrayList<Product>) output.getData();
+                                if (products != null || products.size() > 0) {
+                                    for (Product product : products) {
+//                                        feedAdapter.addItem(product);
+                                        feedAdapter.add(product);
+//                                    LOGD(TAG, "product.getMainImageMobileThumb()=> " + product.getMainImageMobileThumb());
+                                    }
+
+                                    feedAdapter.notifyDataSetChanged();
+                                }
+
+//                                LOGD(TAG, "products.get(0) =>" + products.get(0).toString());
+                            }
+                        });
+                    }
+                }).start();
+            }
+        });
+    }
+
+    private void test1API(final Context context) {
+        ApiClient.getInstance().productsGet(context,"", new ApiClient.ApiResponseListener() {
+            @Override
+            public void onResponse(final Object result) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                            }
+                        });
+                    }
+                }).start();
+            }
+        });
+    }
+
+    private void test2API(final Context context) {
+        ApiClient.getInstance().productsByIdGet(context,"", new ApiClient.ApiResponseListener() {
+            @Override
+            public void onResponse(final Object result) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                            }
+                        });
+                    }
+                }).start();
+            }
+        });
+    }
+
+    private void test3API(final Context context) {
+        ApiClient.getInstance().productByHostcodeAndProductNoGet(context,"","", new ApiClient.ApiResponseListener() {
+            @Override
+            public void onResponse(final Object result) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+//                                LOGD(TAG, "products.get(0) =>" + products.get(0).toString());
+                            }
+                        });
+                    }
+                }).start();
+            }
+        });
+    }
+
+    private void test4API(final Context context) {
+        ApiClient.getInstance().objectsByProductIdGet(context, "", new ApiClient.ApiResponseListener() {
+            @Override
+            public void onResponse(final Object result) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+//                                Gson gson = new Gson();
+//                                GetFeedResponse output = null;
+//                                output = (GetFeedResponse) result;
+//                                LOGE(TAG, "output=>" + output.toString());
+
+//                                LOGD(TAG, "products.get(0) =>" + products.get(0).toString());
+                            }
+                        });
+                    }
+                }).start();
+            }
+        });
+    }
+
+    private void test5API(final Context context) {
+        String root = Environment.getExternalStorageDirectory().toString() + "/Pictures";
+        File myDir = new File(root);
+        myDir.mkdirs();
+        File image = new File(root, "5a13a888247c1a0001704f19.jpg");
+
+        if (image.isFile()) {
+            LOGD("image test", "ok");
+        } else {
+            LOGD("image test", "fail");
+        }
+
+        ApiClient.getInstance().uploadImage1(image, new ApiClient.ApiResponseListener() {
+            @Override
+            public void onResponse(final Object result) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                    }
+                }).start();
+            }
+        });
+    }
+
+    private void test6API(final Context context) {
+
+        String root = Environment.getExternalStorageDirectory().toString() + "/Pictures";
+        File myDir = new File(root);
+        myDir.mkdirs();
+        File image = new File(root, "5a13a888247c1a0001704f19.jpg");
+
+        if (image.isFile()) {
+            LOGD("image test", "ok");
+        } else {
+            LOGD("image test", "fail");
+        }
+
+        ApiClient.getInstance().uploadImage2(image, new ApiClient.ApiResponseListener() {
+            @Override
+            public void onResponse(final Object result) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                    }
+                }).start();
+            }
+        });
+    }
+
+
+
 }

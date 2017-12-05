@@ -18,6 +18,8 @@ import com.etsy.android.grid.util.DynamicHeightTextView;
 
 import net.bluehack.stylens_android.R;
 
+import io.swagger.client.model.Product;
+
 /***
  * ADAPTER
  */
@@ -31,11 +33,13 @@ public class SampleAdapter extends ArrayAdapter<String> {
         Button btnGo;
     }
 
-    private final LayoutInflater mLayoutInflater;
-    private final Random mRandom;
-    private final ArrayList<Integer> mBackgroundColors;
-
+    private LayoutInflater mLayoutInflater;
+    private Random mRandom;
+    private ArrayList<Integer> mBackgroundColors;
     private static final SparseArray<Double> sPositionHeightRatios = new SparseArray<Double>();
+
+
+    private ArrayList<Product> products;
 
     public SampleAdapter(final Context context, final int textViewResourceId) {
         super(context, textViewResourceId);
@@ -48,6 +52,7 @@ public class SampleAdapter extends ArrayAdapter<String> {
         mBackgroundColors.add(R.color.yellow);
         mBackgroundColors.add(R.color.grey);
     }
+
 
     @Override
     public View getView(final int position, View convertView, final ViewGroup parent) {
@@ -66,15 +71,13 @@ public class SampleAdapter extends ArrayAdapter<String> {
         }
 
         double positionHeight = getPositionRatio(position);
-        int backgroundIndex = position >= mBackgroundColors.size() ?
-                position % mBackgroundColors.size() : position;
-
-        convertView.setBackgroundResource(mBackgroundColors.get(backgroundIndex));
+//        int backgroundIndex = position >= mBackgroundColors.size() ? position % mBackgroundColors.size() : position;
+//        convertView.setBackgroundResource(mBackgroundColors.get(backgroundIndex));
 
         Log.d(TAG, "getView position:" + position  + " h:" + positionHeight);
 
         vh.txtLineOne.setHeightRatio(positionHeight);
-        vh.txtLineOne.setText(getItem(position) + position);
+//        vh.txtLineOne.setText(getItem(position) + position);
 
         vh.btnGo.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -21,6 +21,8 @@ public class GetObjectsResponseData {
   
   @SerializedName("boxes")
   private BoxesArray boxes = null;
+  @SerializedName("image_id")
+  private String imageId = null;
 
   /**
    **/
@@ -30,6 +32,16 @@ public class GetObjectsResponseData {
   }
   public void setBoxes(BoxesArray boxes) {
     this.boxes = boxes;
+  }
+
+  /**
+   **/
+  @ApiModelProperty(value = "")
+  public String getImageId() {
+    return imageId;
+  }
+  public void setImageId(String imageId) {
+    this.imageId = imageId;
   }
 
 
@@ -42,13 +54,15 @@ public class GetObjectsResponseData {
       return false;
     }
     GetObjectsResponseData getObjectsResponseData = (GetObjectsResponseData) o;
-    return (this.boxes == null ? getObjectsResponseData.boxes == null : this.boxes.equals(getObjectsResponseData.boxes));
+    return (this.boxes == null ? getObjectsResponseData.boxes == null : this.boxes.equals(getObjectsResponseData.boxes)) &&
+        (this.imageId == null ? getObjectsResponseData.imageId == null : this.imageId.equals(getObjectsResponseData.imageId));
   }
 
   @Override
   public int hashCode() {
     int result = 17;
     result = 31 * result + (this.boxes == null ? 0: this.boxes.hashCode());
+    result = 31 * result + (this.imageId == null ? 0: this.imageId.hashCode());
     return result;
   }
 
@@ -58,6 +72,7 @@ public class GetObjectsResponseData {
     sb.append("class GetObjectsResponseData {\n");
     
     sb.append("  boxes: ").append(boxes).append("\n");
+    sb.append("  imageId: ").append(imageId).append("\n");
     sb.append("}\n");
     return sb.toString();
   }

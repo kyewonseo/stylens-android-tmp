@@ -27,6 +27,8 @@ public class BoxObject {
   private String classCode = null;
   @SerializedName("class_name")
   private String className = null;
+  @SerializedName("score")
+  private Float score = null;
   @SerializedName("products")
   private List<Product> products = null;
 
@@ -63,6 +65,16 @@ public class BoxObject {
   /**
    **/
   @ApiModelProperty(value = "")
+  public Float getScore() {
+    return score;
+  }
+  public void setScore(Float score) {
+    this.score = score;
+  }
+
+  /**
+   **/
+  @ApiModelProperty(value = "")
   public List<Product> getProducts() {
     return products;
   }
@@ -83,6 +95,7 @@ public class BoxObject {
     return (this.box == null ? boxObject.box == null : this.box.equals(boxObject.box)) &&
         (this.classCode == null ? boxObject.classCode == null : this.classCode.equals(boxObject.classCode)) &&
         (this.className == null ? boxObject.className == null : this.className.equals(boxObject.className)) &&
+        (this.score == null ? boxObject.score == null : this.score.equals(boxObject.score)) &&
         (this.products == null ? boxObject.products == null : this.products.equals(boxObject.products));
   }
 
@@ -92,6 +105,7 @@ public class BoxObject {
     result = 31 * result + (this.box == null ? 0: this.box.hashCode());
     result = 31 * result + (this.classCode == null ? 0: this.classCode.hashCode());
     result = 31 * result + (this.className == null ? 0: this.className.hashCode());
+    result = 31 * result + (this.score == null ? 0: this.score.hashCode());
     result = 31 * result + (this.products == null ? 0: this.products.hashCode());
     return result;
   }
@@ -104,6 +118,7 @@ public class BoxObject {
     sb.append("  box: ").append(box).append("\n");
     sb.append("  classCode: ").append(classCode).append("\n");
     sb.append("  className: ").append(className).append("\n");
+    sb.append("  score: ").append(score).append("\n");
     sb.append("  products: ").append(products).append("\n");
     sb.append("}\n");
     return sb.toString();

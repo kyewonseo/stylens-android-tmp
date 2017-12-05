@@ -57,13 +57,18 @@ public class ObjectApi {
   }
 
   /**
-  * Query to search multiple objects
+  * Query to search objects and products
   * 
    * @param file Image file to upload (only support jpg format yet)
    * @return GetObjectsResponse
   */
-  public GetObjectsResponse getObjects (File file) throws TimeoutException, ExecutionException, InterruptedException, ApiException {
+  public GetObjectsResponse getObjectsByImageFile (File file) throws TimeoutException, ExecutionException, InterruptedException, ApiException {
     Object postBody = null;
+    // verify the required parameter 'file' is set
+    if (file == null) {
+      VolleyError error = new VolleyError("Missing the required parameter 'file' when calling getObjectsByImageFile",
+        new ApiException(400, "Missing the required parameter 'file' when calling getObjectsByImageFile"));
+    }
 
     // create path and map variables
     String path = "/objects";
@@ -118,13 +123,18 @@ public class ObjectApi {
   }
 
       /**
-   * Query to search multiple objects
+   * Query to search objects and products
    * 
    * @param file Image file to upload (only support jpg format yet)
   */
-  public void getObjects (File file, final Response.Listener<GetObjectsResponse> responseListener, final Response.ErrorListener errorListener) {
+  public void getObjectsByImageFile (File file, final Response.Listener<GetObjectsResponse> responseListener, final Response.ErrorListener errorListener) {
     Object postBody = null;
 
+    // verify the required parameter 'file' is set
+    if (file == null) {
+      VolleyError error = new VolleyError("Missing the required parameter 'file' when calling getObjectsByImageFile",
+        new ApiException(400, "Missing the required parameter 'file' when calling getObjectsByImageFile"));
+    }
 
     // create path and map variables
     String path = "/objects".replaceAll("\\{format\\}","json");
@@ -163,6 +173,133 @@ public class ObjectApi {
 
     try {
       apiInvoker.invokeAPI(basePath, path, "POST", queryParams, postBody, headerParams, formParams, contentType, authNames,
+        new Response.Listener<String>() {
+          @Override
+          public void onResponse(String localVarResponse) {
+            try {
+              responseListener.onResponse((GetObjectsResponse) ApiInvoker.deserialize(localVarResponse,  "", GetObjectsResponse.class));
+            } catch (ApiException exception) {
+               errorListener.onErrorResponse(new VolleyError(exception));
+            }
+          }
+      }, new Response.ErrorListener() {
+          @Override
+          public void onErrorResponse(VolleyError error) {
+            errorListener.onErrorResponse(error);
+          }
+      });
+    } catch (ApiException ex) {
+      errorListener.onErrorResponse(new VolleyError(ex));
+    }
+  }
+  /**
+  * Query to search multiple objects
+  * 
+   * @param productId 
+   * @return GetObjectsResponse
+  */
+  public GetObjectsResponse getObjectsByProductId (String productId) throws TimeoutException, ExecutionException, InterruptedException, ApiException {
+    Object postBody = null;
+    // verify the required parameter 'productId' is set
+    if (productId == null) {
+      VolleyError error = new VolleyError("Missing the required parameter 'productId' when calling getObjectsByProductId",
+        new ApiException(400, "Missing the required parameter 'productId' when calling getObjectsByProductId"));
+    }
+
+    // create path and map variables
+    String path = "/objects/products/{productId}".replaceAll("\\{" + "productId" + "\\}", apiInvoker.escapeString(productId.toString()));
+
+    // query params
+    List<Pair> queryParams = new ArrayList<Pair>();
+    // header params
+    Map<String, String> headerParams = new HashMap<String, String>();
+    // form params
+    Map<String, String> formParams = new HashMap<String, String>();
+    String[] contentTypes = {
+    };
+    String contentType = contentTypes.length > 0 ? contentTypes[0] : "application/json";
+
+    if (contentType.startsWith("multipart/form-data")) {
+      // file uploading
+      MultipartEntityBuilder localVarBuilder = MultipartEntityBuilder.create();
+      HttpEntity httpEntity = (HttpEntity) localVarBuilder.build();
+      postBody = httpEntity;
+    } else {
+      // normal form params
+    }
+
+    String[] authNames = new String[] {  };
+
+    try {
+      String localVarResponse = apiInvoker.invokeAPI (basePath, path, "GET", queryParams, postBody, headerParams, formParams, contentType, authNames);
+      if (localVarResponse != null) {
+         return (GetObjectsResponse) ApiInvoker.deserialize(localVarResponse, "", GetObjectsResponse.class);
+      } else {
+         return null;
+      }
+    } catch (ApiException ex) {
+       throw ex;
+    } catch (InterruptedException ex) {
+       throw ex;
+    } catch (ExecutionException ex) {
+      if (ex.getCause() instanceof VolleyError) {
+        VolleyError volleyError = (VolleyError)ex.getCause();
+        if (volleyError.networkResponse != null) {
+          throw new ApiException(volleyError.networkResponse.statusCode, volleyError.getMessage());
+        }
+      }
+      throw ex;
+    } catch (TimeoutException ex) {
+      throw ex;
+    }
+  }
+
+      /**
+   * Query to search multiple objects
+   * 
+   * @param productId 
+  */
+  public void getObjectsByProductId (String productId, final Response.Listener<GetObjectsResponse> responseListener, final Response.ErrorListener errorListener) {
+    Object postBody = null;
+
+    // verify the required parameter 'productId' is set
+    if (productId == null) {
+      VolleyError error = new VolleyError("Missing the required parameter 'productId' when calling getObjectsByProductId",
+        new ApiException(400, "Missing the required parameter 'productId' when calling getObjectsByProductId"));
+    }
+
+    // create path and map variables
+    String path = "/objects/products/{productId}".replaceAll("\\{format\\}","json").replaceAll("\\{" + "productId" + "\\}", apiInvoker.escapeString(productId.toString()));
+
+    // query params
+    List<Pair> queryParams = new ArrayList<Pair>();
+    // header params
+    Map<String, String> headerParams = new HashMap<String, String>();
+    // form params
+    Map<String, String> formParams = new HashMap<String, String>();
+
+
+
+    String[] contentTypes = {
+      
+    };
+    String contentType = contentTypes.length > 0 ? contentTypes[0] : "application/json";
+
+    if (contentType.startsWith("multipart/form-data")) {
+      // file uploading
+      MultipartEntityBuilder localVarBuilder = MultipartEntityBuilder.create();
+      
+
+      HttpEntity httpEntity = (HttpEntity) localVarBuilder.build();
+      postBody = httpEntity;
+    } else {
+      // normal form params
+          }
+
+    String[] authNames = new String[] {  };
+
+    try {
+      apiInvoker.invokeAPI(basePath, path, "GET", queryParams, postBody, headerParams, formParams, contentType, authNames,
         new Response.Listener<String>() {
           @Override
           public void onResponse(String localVarResponse) {
