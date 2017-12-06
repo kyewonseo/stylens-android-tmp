@@ -21,6 +21,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name="net.bluehack.stylens.contents.ContentsDetailActivity"/>
+        <activity android:name="net.bluehack.stylens.contents.ContentsResultActivity"/>
+
     </application>
 
 </manifest>

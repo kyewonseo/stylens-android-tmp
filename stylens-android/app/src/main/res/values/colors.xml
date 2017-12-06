@@ -13,4 +13,6 @@
     <color name="red">#fff10800</color>
     <color name="list_item_pressed">#1A000000</color>
     <color name="black">#66000000</color>
+
+    <color name="color_01">#ffffff</color>
 </resources>

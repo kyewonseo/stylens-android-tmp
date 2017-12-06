@@ -2,6 +2,7 @@ package net.bluehack.stylens.home;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -25,11 +26,14 @@ import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 import net.bluehack.stylens.ApiClient;
+import net.bluehack.stylens.contents.ContentsDetailActivity;
+import net.bluehack.stylens.utils.UiUtil;
 import net.bluehack.stylens_android.R;
 
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -153,6 +157,9 @@ public class StaggeredGridFragment extends Fragment implements
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Toast.makeText(getActivity(), "Item Clicked: " + position, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this.getActivity(), ContentsDetailActivity.class);
+        intent.putExtra("product", UiUtil.toStringGson(products.get(position)));
+        startActivity(intent);
     }
 
     private void feedGetAPI(final Context context) {
@@ -190,24 +197,24 @@ public class StaggeredGridFragment extends Fragment implements
         });
     }
 
-    private void test1API(final Context context) {
-        ApiClient.getInstance().productsGet(context,"", new ApiClient.ApiResponseListener() {
-            @Override
-            public void onResponse(final Object result) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-
-                            }
-                        });
-                    }
-                }).start();
-            }
-        });
-    }
+//    private void test1API(final Context context) {
+//        ApiClient.getInstance().productsGet(context,"", new ApiClient.ApiResponseListener() {
+//            @Override
+//            public void onResponse(final Object result) {
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        getActivity().runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//
+//                            }
+//                        });
+//                    }
+//                }).start();
+//            }
+//        });
+//    }
 
     private void test2API(final Context context) {
         ApiClient.getInstance().productsByIdGet(context,"", new ApiClient.ApiResponseListener() {
@@ -284,7 +291,7 @@ public class StaggeredGridFragment extends Fragment implements
             LOGD("image test", "fail");
         }
 
-        ApiClient.getInstance().uploadImage1(image, new ApiClient.ApiResponseListener() {
+        ApiClient.getInstance().productsByImageFilePost(image, new ApiClient.ApiResponseListener() {
             @Override
             public void onResponse(final Object result) {
                 new Thread(new Runnable() {
@@ -309,7 +316,7 @@ public class StaggeredGridFragment extends Fragment implements
             LOGD("image test", "fail");
         }
 
-        ApiClient.getInstance().uploadImage2(image, new ApiClient.ApiResponseListener() {
+        ApiClient.getInstance().objectsByImageFilePost(image, new ApiClient.ApiResponseListener() {
             @Override
             public void onResponse(final Object result) {
                 new Thread(new Runnable() {

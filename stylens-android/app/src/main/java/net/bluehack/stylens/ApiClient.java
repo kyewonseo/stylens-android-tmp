@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import io.swagger.client.ApiException;
@@ -33,12 +34,14 @@ import io.swagger.client.model.GetProductResponse;
 import io.swagger.client.model.GetProductsResponse;
 
 import static net.bluehack.stylens.utils.Logger.LOGD;
+import static net.bluehack.stylens.utils.Logger.LOGE;
 import static net.bluehack.stylens.utils.Logger.makeLogTag;
 
 public class ApiClient {
     private static final String TAG = makeLogTag(ApiClient.class);
     private static ApiClient ourInstance = new ApiClient();
     private final String header = "application/json";
+    private final String baseUrl = "http://api.stylelens.io";
 
     public static ApiClient getInstance() {
         return ourInstance;
@@ -77,7 +80,8 @@ public class ApiClient {
         }.execute();
     }
 
-    public void productsGet(final Context context, final String projectId, final ApiResponseListener listener) {
+    public void productsGet(final Context context, final String productId,
+                            final int offset, final int limit, final ApiResponseListener listener) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -85,8 +89,8 @@ public class ApiClient {
                 GetProductsResponse output = null;
                 ProductApi api = new ProductApi();
                 try {
-//                    output = api.getProducts(projectId, 0,3);
-                    output = api.getProducts("5a13a92a247c1a00017051c2", 0,3);
+                    output = api.getProducts(productId, offset,limit);
+//                    output = api.getProducts("5a13a92a247c1a00017051c2", 0,3);
                     LOGD(TAG, "output =>" + UiUtil.toStringGson(output));
                     listener.onResponse(output);
                 } catch (TimeoutException e) {
@@ -131,32 +135,32 @@ public class ApiClient {
         }.execute();
     }
 
-    public void productsByImageFilePost(final Context context, final File image, final ApiResponseListener listener) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-
-                GetProductsResponse output = null;
-                ProductApi api = new ProductApi();
-
-                try {
-                    output = api.getProductsByImageFile(image);
-                    LOGD(TAG, "output =>" + UiUtil.toStringGson(output));
-                    listener.onResponse(output);
-                } catch (TimeoutException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ApiException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-        }.execute();
-    }
+//    public void productsByImageFilePost(final Context context, final File image, final ApiResponseListener listener) {
+//        new AsyncTask<Void, Void, Void>() {
+//            @Override
+//            protected Void doInBackground(Void... params) {
+//
+//                GetProductsResponse output = null;
+//                ProductApi api = new ProductApi();
+//
+//                try {
+//                    output = api.getProductsByImageFile(image);
+//                    LOGD(TAG, "output =>" + UiUtil.toStringGson(output));
+//                    listener.onResponse(output);
+//                } catch (TimeoutException e) {
+//                    e.printStackTrace();
+//                } catch (ExecutionException e) {
+//                    e.printStackTrace();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                } catch (ApiException e) {
+//                    e.printStackTrace();
+//                }
+//                return null;
+//            }
+//
+//        }.execute();
+//    }
 
     public void productByHostcodeAndProductNoGet(final Context context, final String hostCode, final String productNo ,final ApiResponseListener listener) {
         new AsyncTask<Void, Void, Void>() {
@@ -211,32 +215,32 @@ public class ApiClient {
         }.execute();
     }
 
-    public void objectsByImageFilePost(final Context context, final File file, final ApiResponseListener listener) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-
-                GetObjectsResponse output = null;
-                ObjectApi api = new ObjectApi();
-
-                try {
-                    output = api.getObjectsByImageFile(file);
-                    LOGD(TAG, "output =>" + UiUtil.toStringGson(output));
-                    listener.onResponse(output);
-                } catch (TimeoutException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ApiException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-        }.execute();
-    }
+//    public void objectsByImageFilePost(final Context context, final File file, final ApiResponseListener listener) {
+//        new AsyncTask<Void, Void, Void>() {
+//            @Override
+//            protected Void doInBackground(Void... params) {
+//
+//                GetObjectsResponse output = null;
+//                ObjectApi api = new ObjectApi();
+//
+//                try {
+//                    output = api.getObjectsByImageFile(file);
+//                    LOGD(TAG, "output =>" + UiUtil.toStringGson(output));
+//                    listener.onResponse(output);
+//                } catch (TimeoutException e) {
+//                    e.printStackTrace();
+//                } catch (ExecutionException e) {
+//                    e.printStackTrace();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                } catch (ApiException e) {
+//                    e.printStackTrace();
+//                }
+//                return null;
+//            }
+//
+//        }.execute();
+//    }
 
     public void objectsByProductIdGet(final Context context, final String productId, final ApiResponseListener listener) {
         new AsyncTask<Void, Void, Void>() {
@@ -265,20 +269,21 @@ public class ApiClient {
         }.execute();
     }
 
-    public void uploadImage1(final File file, final ApiClient.ApiResponseListener listener) {
+    public void productsByImageFilePost(final File file, final ApiClient.ApiResponseListener listener) {
 
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
                 try {
 
+                    final String urlResource = "/products/images";
                     final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/jpg");
 
                     RequestBody req = new MultipartBuilder().type(MultipartBuilder.FORM)
-                            .addFormDataPart("file", "profile.jpg", RequestBody.create(MEDIA_TYPE_PNG, file)).build();
+                            .addFormDataPart("file", file.getName(), RequestBody.create(MEDIA_TYPE_PNG, file)).build();
 
                     Request request = new Request.Builder()
-                            .url("http://api.stylelens.io/products/images")
+                            .url(baseUrl+ urlResource)
                             .post(req)
                             .build();
 
@@ -287,56 +292,57 @@ public class ApiClient {
 
                     Gson gson = new Gson();
                     String resData = response.body().string();
-                    Log.d("response", resData);
+                    LOGD("response", resData);
+//                    GetProductsResponse getProductsResponse = gson.fromJson(resData, GetProductsResponse.class);
+//                    listener.onResponse(getProductsResponse);
+                    listener.onResponse(new JSONObject(resData).getJSONArray("data"));
 
-                    listener.onResponse(new JSONObject(resData).getJSONObject("data"));
-//            Log.d("response", "uploadImage:"+response.body().string());
-
-//                    return new JSONObject(resData);
 
                 } catch (UnknownHostException | UnsupportedEncodingException e) {
-                    Log.e(TAG, "Error: " + e.getLocalizedMessage());
+                    LOGE(TAG, "Error: " + e.getLocalizedMessage());
                 } catch (Exception e) {
-                    Log.e(TAG, "Other Error: " + e.getLocalizedMessage());
+                    LOGE(TAG, "Other Error: " + e.getLocalizedMessage());
                 }
                 return null;
             }
         }.execute();
     }
 
-    public void uploadImage2(final File file, final ApiClient.ApiResponseListener listener) {
+    public void objectsByImageFilePost(final File file, final ApiClient.ApiResponseListener listener) {
 
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
                 try {
 
+                    final String urlResource = "/objects";
                     final MediaType MEDIA_TYPE_PNG = MediaType.parse("image/jpg");
 
                     RequestBody req = new MultipartBuilder().type(MultipartBuilder.FORM)
-                            .addFormDataPart("file", "profile.jpg", RequestBody.create(MEDIA_TYPE_PNG, file)).build();
+                            .addFormDataPart("file", file.getName(), RequestBody.create(MEDIA_TYPE_PNG, file)).build();
 
                     Request request = new Request.Builder()
-                            .url("http://api.stylelens.io/objects")
+                            .url(baseUrl+ urlResource)
                             .post(req)
                             .build();
 
                     OkHttpClient client = new OkHttpClient();
+                    client.setConnectTimeout(65, TimeUnit.SECONDS); // connect timeout
+                    client.setReadTimeout(65, TimeUnit.SECONDS);
                     Response response = client.newCall(request).execute();
 
                     Gson gson = new Gson();
                     String resData = response.body().string();
-                    Log.d("response", resData);
-
+                    LOGD("response", resData);
+//                    GetProductsResponse getProductsResponse = gson.fromJson(resData, GetProductsResponse.class);
+//                    listener.onResponse(getProductsResponse);
                     listener.onResponse(new JSONObject(resData).getJSONObject("data"));
-//            Log.d("response", "uploadImage:"+response.body().string());
 
-//                    return new JSONObject(resData);
 
                 } catch (UnknownHostException | UnsupportedEncodingException e) {
-                    Log.e(TAG, "Error: " + e.getLocalizedMessage());
+                    LOGE(TAG, "Error: " + e.getLocalizedMessage());
                 } catch (Exception e) {
-                    Log.e(TAG, "Other Error: " + e.getLocalizedMessage());
+                    LOGE(TAG, "Other Error: " + e.getLocalizedMessage());
                 }
                 return null;
             }

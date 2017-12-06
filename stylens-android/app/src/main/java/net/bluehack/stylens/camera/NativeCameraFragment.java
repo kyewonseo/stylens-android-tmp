@@ -1,8 +1,13 @@
 package net.bluehack.stylens.camera;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
+import android.media.ExifInterface;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -20,6 +25,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import net.bluehack.stylens.contents.ContentsResultActivity;
 import net.bluehack.stylens.utils.DialogHelper;
 import net.bluehack.stylens_android.R;
 
@@ -30,6 +36,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import static net.bluehack.stylens.utils.Logger.LOGD;
 
 /**
  * Take a picture directly from inside the app using this fragment.
@@ -438,12 +446,23 @@ public class NativeCameraFragment extends Fragment {
             }
 
             try {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                Bitmap rotatedBitmap = rotate(bitmap, 90);
+
                 FileOutputStream fos = new FileOutputStream(pictureFile);
-                fos.write(data);
+                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+//                fos.flush();
                 fos.close();
 
+                Toast.makeText(getActivity(), "Your picture has been saved!", Toast.LENGTH_SHORT);
+
+                Intent intent = new Intent(getActivity(), ContentsResultActivity.class);
+                intent.putExtra("imageFile", pictureFile.getPath());
+                startActivity(intent);
+
                 // Restart the camera preview.
-                safeCameraOpenInView(mCameraView);
+//                safeCameraOpenInView(mCameraView);
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -452,31 +471,60 @@ public class NativeCameraFragment extends Fragment {
         }
     };
 
+    public static Bitmap rotate(Bitmap bitmap, int degree) {
+        int w = bitmap.getWidth();
+        int h = bitmap.getHeight();
+
+        Matrix mtx = new Matrix();
+        //       mtx.postRotate(degree);
+        mtx.setRotate(degree);
+
+        return Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, true);
+    }
+
     /**
      * Used to return the camera File output.
      * @return
      */
-    private File getOutputMediaFile(){
+    private File getOutputMediaFile() {
 
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "UltimateCameraGuideApp");
+//        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "UltimateCameraGuideApp");
 
-        if (! mediaStorageDir.exists()){
-            if (! mediaStorageDir.mkdirs()){
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Stylens");
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
                 Log.d("Camera Guide", "Required media storage does not exist");
                 return null;
             }
         }
-
         // Create a media file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         File mediaFile;
         mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                "IMG_"+ timeStamp + ".jpg");
+                "IMG_" + timeStamp + ".jpg");
 
-        DialogHelper.showDialog( "Success!","Your picture has been saved!",getActivity());
+//        DialogHelper.showDialog( "Success!","Your picture has been saved!",getActivity());
 //        Toast.makeText(getActivity(), "Your picture has been saved!", Toast.LENGTH_SHORT);
 
         return mediaFile;
     }
+    //    private File getOutputMediaFile1(){
+//
+//        String root = Environment.getExternalStorageDirectory().toString() + "/Pictures";
+//        File myDir = new File(root);
+//        myDir.mkdirs();
+//
+//        // Create a media file name
+//        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//        File mediaFile = new File(root, "IMG_" + timeStamp + ".jpg");
+//
+//        if (mediaFile.isFile()) {
+//            LOGD("mediaFile isFile", "ok");
+//        } else {
+//            LOGD("mediaFile isFile", "fail");
+//        }
+//
+//        return mediaFile;
+//    }
+
 }
