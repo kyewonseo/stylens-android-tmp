@@ -54,7 +54,10 @@ public class StaggeredGridFragment extends Fragment implements
     private FeedAdapter feedAdapter;
 
     private ArrayList<String> mData;
-    private ArrayList<Product> products = null;
+    private static ArrayList<Product> products = null;
+    private static Boolean isMoreItem = false;
+
+    public StaggeredGridFragment() {}
 
     public static StaggeredGridFragment create(int pageNumber) {
         StaggeredGridFragment fragment = new StaggeredGridFragment();
@@ -100,17 +103,12 @@ public class StaggeredGridFragment extends Fragment implements
         }
 
         if (products == null) {
-//            mData = SampleData.generateSampleData();
+            products = new ArrayList<>();
             feedGetAPI(getContext());
-//            test5API(getContext());
-//            test6API(getContext());
-//            test3API(getContext());
-//            test4API(getContext());
+        } else {
+            products.clear();
+            feedGetAPI(getContext());
         }
-
-//        for (Product data : products) {
-//            feedAdapter.add(data);
-//        }
 
         staggeredGridView.setAdapter(feedAdapter);
         staggeredGridView.setOnScrollListener(this);
@@ -142,21 +140,26 @@ public class StaggeredGridFragment extends Fragment implements
         }
     }
 
-    private void onLoadMoreItems() {
-        final ArrayList<String> sampleData = SampleData.generateSampleData();
-        for (String data : sampleData) {
-//            feedAdapter.add(data);
+    public void onLoadMoreItems(ArrayList<Product> moreProducts, int index) {
+        if (moreProducts.size() > 0) {
+//            products.addAll(index, moreProducts);
+            for (Product moreProduct: moreProducts) {
+                products.add(index, moreProduct);
+            }
+            isMoreItem = true;
         }
-        // stash all the data in our backing store
-        mData.addAll(sampleData);
-        // notify the adapter that we can update now
-        feedAdapter.notifyDataSetChanged();
-        mHasRequestedMore = false;
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+
+        if (isMoreItem) {
+            feedAdapter.notifyDataSetChanged();
+            isMoreItem = false;
+        }
+
         Toast.makeText(getActivity(), "Item Clicked: " + position, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getActivity(), "Item Clicked: " + adapterView.getSelectedItemPosition(), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this.getActivity(), ContentsDetailActivity.class);
         intent.putExtra("product", UiUtil.toStringGson(products.get(position)));
         startActivity(intent);
@@ -177,7 +180,7 @@ public class StaggeredGridFragment extends Fragment implements
                                 output = (GetFeedResponse) result;
 //                                LOGE(TAG, "output=>" + output.toString());
 
-                                products = (ArrayList<Product>) output.getData();
+                                products.addAll(output.getData());
                                 if (products != null || products.size() > 0) {
                                     for (Product product : products) {
 //                                        feedAdapter.addItem(product);

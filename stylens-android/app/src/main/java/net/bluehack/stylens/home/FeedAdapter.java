@@ -1,6 +1,10 @@
 package net.bluehack.stylens.home;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -15,14 +19,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.etsy.android.grid.util.DynamicHeightTextView;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
+import net.bluehack.stylens.ApiClient;
 import net.bluehack.stylens.utils.UiUtil;
 import net.bluehack.stylens_android.R;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
+import io.swagger.client.model.GetProductsResponse;
 import io.swagger.client.model.Product;
 
 public class FeedAdapter extends ArrayAdapter<Product> {
@@ -33,7 +41,7 @@ public class FeedAdapter extends ArrayAdapter<Product> {
     static class ViewHolder {
         TextView txtLineOne;
         TextView txt_line2;
-        ImageView btnGo;
+        ImageView iv_more_item;
         ImageView iv_item;
 
     }
@@ -50,10 +58,15 @@ public class FeedAdapter extends ArrayAdapter<Product> {
         mRandom = new Random();
     }
 
-//    public void addItem(Product product) {
-//        this.products.add(product);
-//    }
+    @Override
+    public void insert(@Nullable Product object, int index) {
+        super.insert(object, index);
+    }
 
+    @Override
+    public int getCount() {
+        return super.getCount();
+    }
 
     @Override
     public View getView(final int position, View convertView, final ViewGroup parent) {
@@ -64,7 +77,7 @@ public class FeedAdapter extends ArrayAdapter<Product> {
             vh = new ViewHolder();
             vh.txtLineOne = (TextView) convertView.findViewById(R.id.txt_line1);
             vh.txt_line2 = (TextView) convertView.findViewById(R.id.txt_line2);
-            vh.btnGo = (ImageView) convertView.findViewById(R.id.btn_go);
+            vh.iv_more_item = (ImageView) convertView.findViewById(R.id.iv_more_item);
             vh.iv_item = (ImageView) convertView.findViewById(R.id.iv_item);
 
             convertView.setTag(vh);
@@ -83,12 +96,16 @@ public class FeedAdapter extends ArrayAdapter<Product> {
         vh.txtLineOne.setText(getItem(position).getName().substring(0,7));
         vh.txt_line2.setText(String.valueOf(getItem(position).getPrice()));
 
-        vh.btnGo.setBackground(UiUtil.getDrawable(context, R.drawable.btn_same_product_nor));
-        vh.btnGo.setOnClickListener(new View.OnClickListener() {
+        vh.iv_more_item.setBackground(UiUtil.getDrawable(context, R.drawable.btn_same_product_nor));
+        vh.iv_more_item.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
                 Toast.makeText(getContext(), "Button Clicked Position " +
                         position, Toast.LENGTH_SHORT).show();
+
+                int offset = 1;
+                int limit = 10;
+                productsAPI(context, getItem(position).getId(), offset, limit, position);
             }
         });
 
@@ -115,4 +132,35 @@ public class FeedAdapter extends ArrayAdapter<Product> {
         //TODO: image height로 배치하기
 
     }
+
+    private void productsAPI(final Context context, String productId, int offset, int limit, final int position) {
+        ApiClient.getInstance().productsGet(context, productId, offset, limit, new ApiClient.ApiResponseListener() {
+            @Override
+            public void onResponse(final Object result) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                GetProductsResponse output = null;
+                                output = (GetProductsResponse) result;
+
+                                ArrayList<Product> products = (ArrayList<Product>) output.getData();
+
+                                StaggeredGridFragment staggeredGridFragment= new StaggeredGridFragment();
+                                staggeredGridFragment.onLoadMoreItems(products, position+1);
+                                if (products != null || products.size() > 0) {
+                                    for (Product product : products) {
+                                        insert(product, position+1);
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }).start();
+            }
+        });
+    }
+
 }

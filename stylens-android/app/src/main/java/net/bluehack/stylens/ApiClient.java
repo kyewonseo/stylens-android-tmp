@@ -116,8 +116,8 @@ public class ApiClient {
                 GetProductResponse output = null;
                 ProductApi api = new ProductApi();
                 try {
-//                    output = api.getProductById(projectId);
-                    output = api.getProductById("5a13a92a247c1a00017051c2");
+                    output = api.getProductById(projectId);
+//                    output = api.getProductById("5a13a92a247c1a00017051c2");
                     LOGD(TAG, "output =>" + UiUtil.toStringGson(output));
                     listener.onResponse(output);
                 } catch (TimeoutException e) {
@@ -327,8 +327,8 @@ public class ApiClient {
                             .build();
 
                     OkHttpClient client = new OkHttpClient();
-                    client.setConnectTimeout(65, TimeUnit.SECONDS); // connect timeout
-                    client.setReadTimeout(65, TimeUnit.SECONDS);
+                    client.setConnectTimeout(60, TimeUnit.SECONDS); // connect timeout
+                    client.setReadTimeout(60, TimeUnit.SECONDS);
                     Response response = client.newCall(request).execute();
 
                     Gson gson = new Gson();

@@ -447,10 +447,12 @@ public class NativeCameraFragment extends Fragment {
 
             try {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                Bitmap rotatedBitmap = rotate(bitmap, 90);
+                bitmap = rotate(bitmap, 90);
+                //TODO : create tf image size
+                Bitmap resizeBitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
 
                 FileOutputStream fos = new FileOutputStream(pictureFile);
-                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+                resizeBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
 //                fos.flush();
                 fos.close();
 
@@ -458,6 +460,7 @@ public class NativeCameraFragment extends Fragment {
 
                 Intent intent = new Intent(getActivity(), ContentsResultActivity.class);
                 intent.putExtra("imageFile", pictureFile.getPath());
+                intent.putExtra("imageBitmap", resizeBitmap);
                 startActivity(intent);
 
                 // Restart the camera preview.

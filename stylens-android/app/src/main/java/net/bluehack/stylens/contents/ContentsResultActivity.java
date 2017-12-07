@@ -39,6 +39,7 @@ import io.swagger.client.model.GetObjectsResponseData;
 import io.swagger.client.model.GetProductsResponse;
 import io.swagger.client.model.Product;
 
+import static android.graphics.Bitmap.Config.ARGB_8888;
 import static net.bluehack.stylens.utils.Logger.LOGD;
 import static net.bluehack.stylens.utils.Logger.LOGE;
 import static net.bluehack.stylens.utils.Logger.makeLogTag;
@@ -59,13 +60,15 @@ public class ContentsResultActivity extends AppCompatActivity implements
     private boolean mHasRequestedMore;
     private final int offset = 1;
     private final int limit = 3;
-
+    private Bitmap imageBitmap;
+    private Intent intent;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contents_result);
         context = this;
+        intent = getIntent();
 
         iv_picture = (ImageView) findViewById(R.id.iv_picture);
         iv_back_btn = (ImageView) findViewById(R.id.iv_back_btn);
@@ -74,15 +77,25 @@ public class ContentsResultActivity extends AppCompatActivity implements
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         int width=dm.widthPixels;
-        int height=dm.heightPixels;
+        int height=dm.heightPixels / 2;
 
         File imageFile = getPickImage();
 
+        imageBitmap = (Bitmap)intent.getExtras().get("imageBitmap");
+
         if(imageFile.exists()) {
             Uri uri = Uri.fromFile(imageFile);
+
+//            BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inJustDecodeBounds = true;
+//            BitmapFactory.decodeFile(imageFile.getPath(), options);
+//            int bwidth = options.outWidth;
+//            int bheight = options.outHeight;
+//            String type = options.outMimeType;
+
             Picasso.with(this)
                     .load(uri)
-                    .resize(width,height/2)
+                    .resize(width,height)
                     .into(iv_picture);
 //            Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
 //            iv_picture.setImageBitmap(bitmap);
@@ -103,8 +116,9 @@ public class ContentsResultActivity extends AppCompatActivity implements
         super.onResume();
     }
 
+
     private File getPickImage() {
-        Intent intent = getIntent();
+
         String imageItem = null;
         File imageFile = null;
 
@@ -136,7 +150,7 @@ public class ContentsResultActivity extends AppCompatActivity implements
             LOGD("image test", "fail");
         }
 
-        ApiClient.getInstance().objectsByImageFilePost(testImage, new ApiClient.ApiResponseListener() {
+        ApiClient.getInstance().objectsByImageFilePost(imageFile, new ApiClient.ApiResponseListener() {
             @Override
             public void onResponse(final Object result) {
                 new Thread(new Runnable() {
