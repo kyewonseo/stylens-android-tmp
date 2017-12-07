@@ -3,4 +3,6 @@
     <string name="picture">picture</string>
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
     <string name="price_unit_won">원</string>
+    <string name="crop__wait">Please wait…</string>
+    <string name="crop__pick_error">No image sources available</string>
 </resources>
