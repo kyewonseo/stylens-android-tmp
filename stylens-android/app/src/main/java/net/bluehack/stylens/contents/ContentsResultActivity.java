@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
@@ -40,10 +41,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
-import io.swagger.client.model.BoxArray;
+import io.swagger.client.model.Box;
+import io.swagger.client.model.BoxesArray;
 import io.swagger.client.model.GetObjectsResponse;
 import io.swagger.client.model.GetObjectsResponseData;
 import io.swagger.client.model.GetProductsResponse;
@@ -66,7 +69,7 @@ public class ContentsResultActivity extends MonitoredActivity implements
 
     private ArrayList<Product> products = null;
 //    private ArrayList<BoxArray> boxs = null;
-    private BoxArray box = null;
+    private Box box = null;
     private FeedAdapter feedAdapter;
     private boolean mHasRequestedMore;
     private final int offset = 1;
@@ -115,6 +118,19 @@ public class ContentsResultActivity extends MonitoredActivity implements
 
         if(imageFile.exists()) {
             Uri uri = Uri.fromFile(imageFile);
+            try {
+
+                Bitmap mutableBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                LOGE(TAG, "imageBitmap W, H =>" + mutableBitmap.getWidth() + mutableBitmap.getHeight());
+//                imageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+
+                imageBitmap = Bitmap.createScaledBitmap(mutableBitmap, width, height, true);
+//                imageBitmap = mutableBitmap.copy(Bitmap.Config.ARGB_8888, true);
+//                startCrop();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
 //            BitmapFactory.Options options = new BitmapFactory.Options();
 //            options.inJustDecodeBounds = true;
@@ -123,10 +139,10 @@ public class ContentsResultActivity extends MonitoredActivity implements
 //            int bheight = options.outHeight;
 //            String type = options.outMimeType;
 
-            Picasso.with(this)
-                    .load(uri)
-                    .resize(width,height)
-                    .into(iv_picture);
+//            Picasso.with(this)
+//                    .load(uri)
+//                    .resize(width,height)
+//                    .into(iv_picture);
 
 //            startCrop();
 
@@ -207,7 +223,8 @@ public class ContentsResultActivity extends MonitoredActivity implements
 //                                }
 
                                 //TODO: construct all box
-//                                box = getObjectsResponseData.getBoxes().get(0).getBox();
+                                box = getObjectsResponseData.getBoxes().get(0).getBox();
+                                markBoxsCrop(box);
 
                                 products = (ArrayList<Product>) getObjectsResponseData.getBoxes().get(0).getProducts();
                                 if (products != null || products.size() > 0) {
@@ -303,7 +320,7 @@ public class ContentsResultActivity extends MonitoredActivity implements
         super.onBackPressed();
     }
 
-    private void startCrop() {
+    private void markBoxsCrop(final Box box) {
         if (isFinishing()) {
             return;
         }
@@ -314,7 +331,7 @@ public class ContentsResultActivity extends MonitoredActivity implements
                         final CountDownLatch latch = new CountDownLatch(1);
                         handler.post(new Runnable() {
                             public void run() {
-                                iv_picture.center();
+//                                iv_picture.center();
 //                                if (iv_picture.getScale() == 1F) {
 //                                    iv_picture.center();
 //                                }
@@ -326,7 +343,7 @@ public class ContentsResultActivity extends MonitoredActivity implements
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         }
-                        new Cropper().crop();
+                        new Cropper().crop(box);
                     }
                 }, handler
         );
@@ -334,7 +351,7 @@ public class ContentsResultActivity extends MonitoredActivity implements
 
     private class Cropper {
 
-        private void makeDefault() {
+        private void makeDefault(Box box) {
             if (imageBitmap == null) {
                 return;
             }
@@ -361,16 +378,48 @@ public class ContentsResultActivity extends MonitoredActivity implements
             int x = (width - cropWidth) / 2;
             int y = (height - cropHeight) / 2;
 
-            RectF cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
+//            RectF cropRect = new RectF(x, y, x + cropWidth, y + cropHeight);
+
+            RectF boxRect = new RectF(box.getLeft(), box.getTop(), box.getRight(), box.getBottom());
+            float boxWidthRatio = 300.f / imageRect.width();
+            float boxHeightRatio = 300.f / imageRect.height();
+
+            RectF cropRect = new RectF(box.getLeft() / boxWidthRatio, box.getTop() / boxHeightRatio,
+                    box.getRight() / boxWidthRatio, box.getBottom() / boxHeightRatio);
+
+            LOGE(TAG, "display L,T,R,B=>" + iv_picture.getLeft() + ","
+                    + iv_picture.getTop() + ","
+                    + iv_picture.getRight() + ","
+                    + iv_picture.getBottom()
+            );
+
+            LOGE(TAG, "imageBitmap W, H=>" + imageBitmap.getWidth() + ","
+                    + imageBitmap.getHeight()
+            );
+
+            LOGE(TAG, "imageRect W, H=>" + imageRect.width() + ","
+                    + imageRect.height()
+            );
+
+            LOGE(TAG, "cropRect W, H=>" + cropRect.width() + ","
+                    + cropRect.height()
+            );
+
+            LOGE(TAG, "cropRect L,T,R,B=>" + box.getLeft() / boxWidthRatio + ","
+                    + box.getTop() / boxHeightRatio + ","
+                    + box.getRight() / boxWidthRatio + ","
+                    + box.getBottom() / boxHeightRatio
+            );
+
             hv.setup(iv_picture.getUnrotatedMatrix(), imageRect, cropRect, aspectX != 0 && aspectY != 0);
             iv_picture.add(hv);
         }
 
-        public void crop() {
+        public void crop(final Box box) {
             handler.post(new Runnable() {
                 public void run() {
-                    makeDefault();
-                    makeDefault();
+                    makeDefault(box);
+//                    makeDefault();
                     iv_picture.invalidate();
                     cropView = iv_picture.highlightViews.get(0);
                     cropView.setFocus(true);

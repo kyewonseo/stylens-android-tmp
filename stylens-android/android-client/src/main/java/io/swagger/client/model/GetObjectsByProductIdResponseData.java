@@ -18,12 +18,12 @@ import io.swagger.annotations.*;
 import com.google.gson.annotations.SerializedName;
 
 @ApiModel(description = "")
-public class GetObjectsResponseData {
+public class GetObjectsByProductIdResponseData {
   
   @SerializedName("boxes")
   private List<BoxObject> boxes = null;
-  @SerializedName("image_id")
-  private String imageId = null;
+  @SerializedName("product_id")
+  private String productId = null;
 
   /**
    **/
@@ -38,11 +38,11 @@ public class GetObjectsResponseData {
   /**
    **/
   @ApiModelProperty(value = "")
-  public String getImageId() {
-    return imageId;
+  public String getProductId() {
+    return productId;
   }
-  public void setImageId(String imageId) {
-    this.imageId = imageId;
+  public void setProductId(String productId) {
+    this.productId = productId;
   }
 
 
@@ -54,26 +54,26 @@ public class GetObjectsResponseData {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    GetObjectsResponseData getObjectsResponseData = (GetObjectsResponseData) o;
-    return (this.boxes == null ? getObjectsResponseData.boxes == null : this.boxes.equals(getObjectsResponseData.boxes)) &&
-        (this.imageId == null ? getObjectsResponseData.imageId == null : this.imageId.equals(getObjectsResponseData.imageId));
+    GetObjectsByProductIdResponseData getObjectsByProductIdResponseData = (GetObjectsByProductIdResponseData) o;
+    return (this.boxes == null ? getObjectsByProductIdResponseData.boxes == null : this.boxes.equals(getObjectsByProductIdResponseData.boxes)) &&
+        (this.productId == null ? getObjectsByProductIdResponseData.productId == null : this.productId.equals(getObjectsByProductIdResponseData.productId));
   }
 
   @Override
   public int hashCode() {
     int result = 17;
     result = 31 * result + (this.boxes == null ? 0: this.boxes.hashCode());
-    result = 31 * result + (this.imageId == null ? 0: this.imageId.hashCode());
+    result = 31 * result + (this.productId == null ? 0: this.productId.hashCode());
     return result;
   }
 
   @Override
   public String toString()  {
     StringBuilder sb = new StringBuilder();
-    sb.append("class GetObjectsResponseData {\n");
+    sb.append("class GetObjectsByProductIdResponseData {\n");
     
     sb.append("  boxes: ").append(boxes).append("\n");
-    sb.append("  imageId: ").append(imageId).append("\n");
+    sb.append("  productId: ").append(productId).append("\n");
     sb.append("}\n");
     return sb.toString();
   }

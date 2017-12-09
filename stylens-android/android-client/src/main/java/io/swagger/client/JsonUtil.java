@@ -57,8 +57,8 @@ public class JsonUtil {
   public static Type getListTypeForDeserialization(Class cls) {
     String className = cls.getSimpleName();
     
-    if ("BoxArray".equalsIgnoreCase(className)) {
-      return new TypeToken<List<BoxArray>>(){}.getType();
+    if ("Box".equalsIgnoreCase(className)) {
+      return new TypeToken<List<Box>>(){}.getType();
     }
     
     if ("BoxObject".equalsIgnoreCase(className)) {
@@ -71,6 +71,14 @@ public class JsonUtil {
     
     if ("GetFeedResponse".equalsIgnoreCase(className)) {
       return new TypeToken<List<GetFeedResponse>>(){}.getType();
+    }
+    
+    if ("GetObjectsByProductIdResponse".equalsIgnoreCase(className)) {
+      return new TypeToken<List<GetObjectsByProductIdResponse>>(){}.getType();
+    }
+    
+    if ("GetObjectsByProductIdResponseData".equalsIgnoreCase(className)) {
+      return new TypeToken<List<GetObjectsByProductIdResponseData>>(){}.getType();
     }
     
     if ("GetObjectsResponse".equalsIgnoreCase(className)) {
@@ -107,8 +115,8 @@ public class JsonUtil {
   public static Type getTypeForDeserialization(Class cls) {
     String className = cls.getSimpleName();
     
-    if ("BoxArray".equalsIgnoreCase(className)) {
-      return new TypeToken<BoxArray>(){}.getType();
+    if ("Box".equalsIgnoreCase(className)) {
+      return new TypeToken<Box>(){}.getType();
     }
     
     if ("BoxObject".equalsIgnoreCase(className)) {
@@ -121,6 +129,14 @@ public class JsonUtil {
     
     if ("GetFeedResponse".equalsIgnoreCase(className)) {
       return new TypeToken<GetFeedResponse>(){}.getType();
+    }
+    
+    if ("GetObjectsByProductIdResponse".equalsIgnoreCase(className)) {
+      return new TypeToken<GetObjectsByProductIdResponse>(){}.getType();
+    }
+    
+    if ("GetObjectsByProductIdResponseData".equalsIgnoreCase(className)) {
+      return new TypeToken<GetObjectsByProductIdResponseData>(){}.getType();
     }
     
     if ("GetObjectsResponse".equalsIgnoreCase(className)) {

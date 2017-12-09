@@ -12,7 +12,7 @@
 
 package io.swagger.client.model;
 
-import io.swagger.client.model.BoxArray;
+import io.swagger.client.model.Box;
 import io.swagger.client.model.Product;
 import java.util.*;
 import io.swagger.annotations.*;
@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
 public class BoxObject {
   
   @SerializedName("box")
-  private BoxArray box = null;
+  private Box box = null;
   @SerializedName("class_code")
   private String classCode = null;
   @SerializedName("class_name")
@@ -35,10 +35,10 @@ public class BoxObject {
   /**
    **/
   @ApiModelProperty(value = "")
-  public BoxArray getBox() {
+  public Box getBox() {
     return box;
   }
-  public void setBox(BoxArray box) {
+  public void setBox(Box box) {
     this.box = box;
   }
 

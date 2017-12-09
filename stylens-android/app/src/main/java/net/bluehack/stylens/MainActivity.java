@@ -41,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        requestPermission();
     }
 
     @Override
@@ -49,40 +48,49 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-        context = this;
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        tabs = (TabLayout) findViewById(R.id.tabs);
-        tabs.addTab(tabs.newTab().setIcon(UiUtil.getDrawable(context, R.drawable.btn_home_nor)));
-        tabs.addTab(tabs.newTab().setIcon(UiUtil.getDrawable(context, R.drawable.btn_camera_nor)));
-        tabs.addTab(tabs.newTab().setIcon(UiUtil.getDrawable(context, R.drawable.btn_gallery_nor)));
-//        tabs.setTabGravity(TabLayout.SCROLL_INDICATOR_BOTTOM);
-
 
         if (hasPermission()) {
-            mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
-            mViewPager.setAdapter(mPagerAdapter);
-            mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
-            tabs.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                @Override
-                public void onTabSelected(TabLayout.Tab tab) {
-                    mViewPager.setCurrentItem(tab.getPosition());
-                }
-
-                @Override
-                public void onTabUnselected(TabLayout.Tab tab) {
-
-                }
-
-                @Override
-                public void onTabReselected(TabLayout.Tab tab) {
-
-                }
-            });
+            setFragment();
+        } else {
+            requestPermission();
         }
+
+
+//        tabs.setTabGravity(TabLayout.SCROLL_INDICATOR_BOTTOM);
 
     }
 
 
+    private void setFragment() {
+
+        context = this;
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        tabs = (TabLayout) findViewById(R.id.tabs);
+
+        tabs.addTab(tabs.newTab().setIcon(UiUtil.getDrawable(context, R.drawable.btn_home_nor)));
+        tabs.addTab(tabs.newTab().setIcon(UiUtil.getDrawable(context, R.drawable.btn_camera_nor)));
+        tabs.addTab(tabs.newTab().setIcon(UiUtil.getDrawable(context, R.drawable.btn_gallery_nor)));
+
+        mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
+        tabs.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                mViewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+    }
 
     private class PagerAdapter extends FragmentStatePagerAdapter {
 
@@ -144,6 +152,20 @@ public class MainActivity extends AppCompatActivity {
                         "Camera AND storage permission are required for this demo", Toast.LENGTH_LONG).show();
             }
             requestPermissions(new String[] {PERMISSION_CAMERA, PERMISSION_STORAGE}, PERMISSIONS_REQUEST);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(
+            final int requestCode, final String[] permissions, final int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                setFragment();
+            } else {
+                requestPermission();
+            }
         }
     }
 }
