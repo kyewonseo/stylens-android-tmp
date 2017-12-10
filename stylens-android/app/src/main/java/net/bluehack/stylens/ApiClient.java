@@ -250,8 +250,8 @@ public class ApiClient {
                 GetObjectsResponse output = null;
                 ObjectApi api = new ObjectApi();
                 try {
-//                    output = api.getObjectsByProductId(productId);
-                    output = api.getObjectsByProductId("5a13a92a247c1a00017051c2");
+                    output = api.getObjectsByProductId(productId);
+//                    output = api.getObjectsByProductId("5a13a92a247c1a00017051c2");
                     LOGD(TAG, "output =>" + UiUtil.toStringGson(output));
                     listener.onResponse(output);
                 } catch (TimeoutException e) {

@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -61,6 +62,8 @@ public class NativeCameraFragment extends Fragment {
 
     // Reference to the containing view.
     private View mCameraView;
+
+    private FrameLayout preview;
 
     /**
      * Default empty constructor.
@@ -131,7 +134,7 @@ public class NativeCameraFragment extends Fragment {
 
         if(qOpened == true){
             mPreview = new CameraPreview(getActivity().getBaseContext(), mCamera,view);
-            FrameLayout preview = (FrameLayout) view.findViewById(R.id.camera_preview);
+            preview = (FrameLayout) view.findViewById(R.id.camera_preview);
             preview.addView(mPreview);
             mPreview.startCameraPreview();
         }
@@ -265,7 +268,11 @@ public class NativeCameraFragment extends Fragment {
             // Set the camera to Auto Flash mode.
             if (mSupportedFlashModes != null && mSupportedFlashModes.contains(Camera.Parameters.FLASH_MODE_AUTO)){
                 Camera.Parameters parameters = mCamera.getParameters();
-                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+
+                /**FlashMode option*/
+//                parameters.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+//                List<Camera.Size> supportedPreviewSizes = parameters.getSupportedPreviewSizes();
+//                Camera.Size camPreviewSize = getOptimalPreviewSize(supportedPreviewSizes, preview , height);
                 mCamera.setParameters(parameters);
             }
 
@@ -342,12 +349,15 @@ public class NativeCameraFragment extends Fragment {
             // Source: http://stackoverflow.com/questions/7942378/android-camera-will-not-work-startpreview-fails
             final int width = resolveSize(getSuggestedMinimumWidth(), widthMeasureSpec);
             final int height = resolveSize(getSuggestedMinimumHeight(), heightMeasureSpec);
+
             setMeasuredDimension(width, height);
 
             if (mSupportedPreviewSizes != null){
                 mPreviewSize = getOptimalPreviewSize(mSupportedPreviewSizes, width, height);
+
             }
         }
+
 
         /**
          * Update the layout based on rotation and orientation changes.

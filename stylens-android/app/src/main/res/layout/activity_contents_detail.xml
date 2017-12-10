@@ -10,7 +10,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
+        <!--<ImageView-->
+            <!--android:id="@+id/iv_picture"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"/>-->
+
+        <com.soundcloud.android.crop.CropImageView
             android:id="@+id/iv_picture"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

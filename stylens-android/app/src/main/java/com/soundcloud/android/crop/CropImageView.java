@@ -113,6 +113,7 @@ public class CropImageView extends ImageViewTouchBase {
         case MotionEvent.ACTION_UP:
             if (motionHighlightView != null) {
                 centerBasedOnHighlightView(motionHighlightView);
+
                 motionHighlightView.setMode(HighlightView.ModifyMode.None);
             }
             motionHighlightView = null;

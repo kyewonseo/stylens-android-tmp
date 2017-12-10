@@ -25,6 +25,9 @@
 
         <activity android:name="net.bluehack.stylens.contents.ContentsDetailActivity"/>
         <activity android:name="net.bluehack.stylens.contents.ContentsResultActivity"/>
+        <activity
+            android:name="net.bluehack.stylens.contents.ProductWebView"
+            android:screenOrientation="portrait"/>
 
     </application>
 

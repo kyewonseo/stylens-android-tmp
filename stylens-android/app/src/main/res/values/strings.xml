@@ -5,4 +5,8 @@
     <string name="price_unit_won">원</string>
     <string name="crop__wait">Please wait…</string>
     <string name="crop__pick_error">No image sources available</string>
+
+    <string name="progress_loading">Loading...</string>
+    <string name="progress_wait_01">* Please wait until loading is</string>
+    <string name="progress_wait_02">complete</string>
 </resources>
