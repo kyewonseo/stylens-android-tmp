@@ -46,7 +46,7 @@ import static net.bluehack.stylens.utils.Logger.LOGD;
 import static net.bluehack.stylens.utils.Logger.makeLogTag;
 
 public class StaggeredGridFragment extends Fragment implements
-        AbsListView.OnScrollListener, AbsListView.OnItemClickListener {
+        AbsListView.OnScrollListener {
 
     private static final String TAG = makeLogTag(StaggeredGridFragment.class);
     private StaggeredGridView staggeredGridView;
@@ -112,7 +112,7 @@ public class StaggeredGridFragment extends Fragment implements
 
         staggeredGridView.setAdapter(feedAdapter);
         staggeredGridView.setOnScrollListener(this);
-        staggeredGridView.setOnItemClickListener(this);
+//        staggeredGridView.setOnItemClickListener(this);
 
 
     }
@@ -150,20 +150,20 @@ public class StaggeredGridFragment extends Fragment implements
         }
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-
-        if (isMoreItem) {
-            feedAdapter.notifyDataSetChanged();
-            isMoreItem = false;
-        }
-
-        Toast.makeText(getActivity(), "Item Clicked: " + position, Toast.LENGTH_SHORT).show();
-//        Toast.makeText(getActivity(), "Item Clicked: " + adapterView.getSelectedItemPosition(), Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this.getActivity(), ContentsDetailActivity.class);
-        intent.putExtra("product", UiUtil.toStringGson(products.get(position)));
-        startActivity(intent);
-    }
+//    @Override
+//    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+//
+//        if (isMoreItem) {
+//            feedAdapter.notifyDataSetChanged();
+//            isMoreItem = false;
+//        }
+//
+//        Toast.makeText(getActivity(), "Item Clicked: " + position, Toast.LENGTH_SHORT).show();
+////        Toast.makeText(getActivity(), "Item Clicked: " + adapterView.getSelectedItemPosition(), Toast.LENGTH_SHORT).show();
+//        Intent intent = new Intent(this.getActivity(), ContentsDetailActivity.class);
+//        intent.putExtra("product", UiUtil.toStringGson(products.get(position)));
+//        startActivity(intent);
+//    }
 
     private void feedGetAPI(final Context context) {
         ApiClient.getInstance().feedGet(context, new ApiClient.ApiResponseListener() {

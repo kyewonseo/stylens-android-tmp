@@ -1,10 +1,13 @@
 package net.bluehack.stylens.home;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -23,6 +26,7 @@ import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import net.bluehack.stylens.ApiClient;
+import net.bluehack.stylens.contents.ContentsDetailActivity;
 import net.bluehack.stylens.utils.UiUtil;
 import net.bluehack.stylens_android.R;
 
@@ -61,6 +65,12 @@ public class FeedAdapter extends ArrayAdapter<Product> {
     @Override
     public void insert(@Nullable Product object, int index) {
         super.insert(object, index);
+    }
+
+
+    @Override
+    public void remove(@Nullable Product object) {
+        super.remove(object);
     }
 
     @Override
@@ -106,6 +116,27 @@ public class FeedAdapter extends ArrayAdapter<Product> {
                 int offset = 1;
                 int limit = 10;
                 productsAPI(context, getItem(position).getId(), offset, limit, position);
+            }
+        });
+
+        vh.iv_item.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getContext(), "Item Clicked: " + position, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getContext(), ContentsDetailActivity.class);
+                intent.putExtra("product", UiUtil.toStringGson(getItem(position)));
+                context.startActivity(intent);
+            }
+        });
+
+        vh.iv_item.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Toast.makeText(getContext(), "Item Long Clicked: " + position, Toast.LENGTH_SHORT).show();
+
+                AlertDialog alertDialog = createDialogBuilder(position);
+                alertDialog.show();
+                return true;
             }
         });
 
@@ -161,6 +192,38 @@ public class FeedAdapter extends ArrayAdapter<Product> {
                 }).start();
             }
         });
+    }
+
+    private AlertDialog createDialogBuilder(final int position) {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                context);
+
+        // 제목셋팅
+        alertDialogBuilder.setTitle("선택한 아이템");
+
+        // AlertDialog 셋팅
+        alertDialogBuilder
+                .setMessage("해당 아이템을 제거 하시겠습니까?")
+                .setCancelable(false)
+                .setPositiveButton("예",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(
+                                    DialogInterface dialog, int id) {
+
+                                remove(getItem(position));
+                                notifyDataSetChanged();
+                            }
+                        })
+                .setNegativeButton("아니요",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(
+                                    DialogInterface dialog, int id) {
+                                // 다이얼로그를 취소한다
+                                dialog.cancel();
+                            }
+                        });
+
+        return alertDialogBuilder.create();
     }
 
 }
