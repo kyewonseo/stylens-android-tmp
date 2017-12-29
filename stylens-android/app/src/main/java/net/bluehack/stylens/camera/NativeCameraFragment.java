@@ -27,7 +27,11 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 
 import net.bluehack.stylens.contents.ContentsResultActivity;
 import net.bluehack.stylens.utils.DialogHelper;
@@ -64,7 +68,11 @@ public class NativeCameraFragment extends Fragment {
     private View mCameraView;
 
     private FrameLayout preview;
+    private ImageView captureButton;
     private FrameLayout innerRelativeLayout;
+
+    private LinearLayout progress_ll;
+    private ImageView progress_iv;
 
     /**
      * Default empty constructor.
@@ -106,13 +114,22 @@ public class NativeCameraFragment extends Fragment {
             return view;
         }
 
+        progress_ll = (LinearLayout) view.findViewById(R.id.progress_ll);
+        progress_iv = (ImageView) view.findViewById(R.id.progress_iv);
+        GlideDrawableImageViewTarget imageViewTarget = new GlideDrawableImageViewTarget(progress_iv);
+        Glide.with(this).load(R.raw.img_loading_gif).into(imageViewTarget);
+
         innerRelativeLayout = (FrameLayout) view.findViewById(R.id.innerRelativeLayout);
         // Trap the capture button.
-        ImageView captureButton = (ImageView) view.findViewById(R.id.button_capture);
+        captureButton = (ImageView) view.findViewById(R.id.button_capture);
         captureButton.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        captureButton.setClickable(false);
+                        progress_ll.setVisibility(View.VISIBLE);
+
                         // get an image from the camera
                         mCamera.takePicture(null, null, mPicture);
                     }
@@ -486,6 +503,9 @@ public class NativeCameraFragment extends Fragment {
                 intent.putExtra("imageFile", pictureFile.getPath());
                 intent.putExtra("imageBitmap", resizeBitmap);
                 startActivity(intent);
+
+                progress_ll.setVisibility(View.GONE);
+                captureButton.setClickable(true);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
