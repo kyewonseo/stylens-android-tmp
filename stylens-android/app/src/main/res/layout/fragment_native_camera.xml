@@ -24,29 +24,45 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <FrameLayout
         android:id="@+id/camera_preview"
         android:layout_width="match_parent"
-        android:layout_height="360dp"
-        android:layout_weight="1" />
+        android:layout_height="match_parent"/>
 
 
-    <RelativeLayout
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/innerRelativeLayout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:gravity="center|bottom"-->
+        <!--android:layout_marginBottom="25dp">-->
+
+        <!--<ImageView-->
+            <!--android:id="@+id/button_capture"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="@drawable/btn_camera_shot_nor"-->
+            <!--/>-->
+    <!--</RelativeLayout>-->
+
+    <FrameLayout
         android:id="@+id/innerRelativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_height="195dp"
         android:gravity="center|bottom"
-        android:layout_marginBottom="25dp">
+        android:layout_alignParentBottom="true"
+        android:background="@color/color_01">
 
         <ImageView
             android:id="@+id/button_capture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:background="@drawable/btn_camera_shot_nor"
             />
-    </RelativeLayout>
+    </FrameLayout>
 </RelativeLayout>

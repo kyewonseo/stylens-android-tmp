@@ -64,6 +64,7 @@ public class NativeCameraFragment extends Fragment {
     private View mCameraView;
 
     private FrameLayout preview;
+    private FrameLayout innerRelativeLayout;
 
     /**
      * Default empty constructor.
@@ -105,6 +106,7 @@ public class NativeCameraFragment extends Fragment {
             return view;
         }
 
+        innerRelativeLayout = (FrameLayout) view.findViewById(R.id.innerRelativeLayout);
         // Trap the capture button.
         ImageView captureButton = (ImageView) view.findViewById(R.id.button_capture);
         captureButton.setOnClickListener(
@@ -461,8 +463,17 @@ public class NativeCameraFragment extends Fragment {
             try {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
                 bitmap = rotate(bitmap, 90);
+
+                // Rotate and crop the image into a square
+                int croppedWidth = preview.getWidth();
+                int croppedHeight = preview.getHeight() - innerRelativeLayout.getHeight();
+
+                Matrix matrix = new Matrix();
+                Bitmap cropped = Bitmap.createBitmap(bitmap, 0, 0, croppedWidth * 2, croppedHeight * 2 + innerRelativeLayout.getHeight(), matrix, true);
+                bitmap.recycle();
+
                 //TODO : create tf image size
-                Bitmap resizeBitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
+                Bitmap resizeBitmap = Bitmap.createScaledBitmap(cropped, 300, 300, true);
 
                 FileOutputStream fos = new FileOutputStream(pictureFile);
                 resizeBitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
@@ -475,9 +486,6 @@ public class NativeCameraFragment extends Fragment {
                 intent.putExtra("imageFile", pictureFile.getPath());
                 intent.putExtra("imageBitmap", resizeBitmap);
                 startActivity(intent);
-
-                // Restart the camera preview.
-//                safeCameraOpenInView(mCameraView);
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
